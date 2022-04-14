@@ -1,46 +1,38 @@
 -- Initialize --
 mash = {"⌘", "⌥", "⌃"}
 hs.hotkey.bind(mash, "r", function() hs.reload(); end)
-hs.alert("Hammerspoon config loaded")
-hs.hotkey.bind(mash, "a", function() hs.caffeinate.lockScreen(); end)
+hs.alert("Hammerspoon config re-loaded")
+hs.hotkey.bind(mash, "l", function() hs.caffeinate.lockScreen(); end)
 
+-- Clipboards history --
+function setUpClipboardTool()
+  ClipboardTool = hs.loadSpoon('ClipboardTool')
+  ClipboardTool.show_in_menubar = false
+  ClipboardTool.show_copied_alert = false
+  ClipboardTool.hist_size = 10
+  ClipboardTool.max_size = false
+  ClipboardTool.paste_on_select = true
+  --- To avoid 1Password clipboard 
+  ClipboardTool.honor_ignoredidentifiers = true
+  ClipboardTool:start()
+  ClipboardTool:bindHotkeys({
+    toggle_clipboard = {mash, "v"}
+  })
+end
+setUpClipboardTool()
 
 -- Window Manager --
--- hs.loadSpoon("ShiftIt")
--- spoon.ShiftIt:bindHotkeys({})
+hs.loadSpoon("MiroWindowsManager")
+spoon.MiroWindowsManager:bindHotkeys({
+  up = {mash, "up"},
+  right = {mash, "right"},
+  down = {mash, "down"},
+  left = {mash, "left"},
+  fullscreen = {mash, "m"},
+  nextscreen = {mash, "/"}
+})
 hs.window.animationDuration = 0.0
---- default grid
-hs.grid.setGrid('2x1')
-hs.grid.setMargins("0,0")
-function getWin()
-  return hs.window.focusedWindow()
-end
---- arrows: move window
-hs.hotkey.bind(mash, "left", function() hs.grid.pushWindowLeft() end)
-hs.hotkey.bind(mash, "right", function() hs.grid.pushWindowRight() end)
-hs.hotkey.bind(mash, "up", function() hs.grid.pushWindowUp() end)
-hs.hotkey.bind(mash, "down", function() hs.grid.pushWindowDown() end)
---- ikjl-+: resize window
-hs.hotkey.bind(mash, "i", function() hs.grid.resizeWindowShorter() end)
-hs.hotkey.bind(mash, "j", function() hs.grid.resizeWindowThinner() end)
-hs.hotkey.bind(mash, "k", function() hs.grid.resizeWindowTaller() end)
-hs.hotkey.bind(mash, "l", function() hs.grid.resizeWindowWider() end)
-hs.hotkey.bind(mash, "-", function() hs.grid.resizeWindowShorter(); hs.grid.resizeWindowThinner() end)
-hs.hotkey.bind(mash, "=", function() hs.grid.resizeWindowTaller();hs.grid.resizeWindowWider() end)
---- 12340: resize grid
-hs.hotkey.bind(mash, "1", function() hs.grid.setGrid('2x1'); hs.alert.show('Grid set to 2x1'); end)
-hs.hotkey.bind(mash, "2", function() hs.grid.setGrid('2x2'); hs.alert.show('Grid set to 2x2'); end)
-hs.hotkey.bind(mash, "3", function() hs.grid.setGrid('3x3'); hs.alert.show('Grid set to 3x3'); end)
-hs.hotkey.bind(mash, "4", function() hs.grid.setGrid('4x4'); hs.alert.show('Grid set to 4x4'); end)
-hs.hotkey.bind(mash, "0", function() hs.grid.setGrid('10x10'); hs.alert.show('Grid set to 10x10'); end)
---- ,: minimize window
-hs.hotkey.bind(mash, ",", function() hs.grid.set(getWin(), '0,0 1x1'); end)
---- m: maximize window
-hs.hotkey.bind(mash, "m", function() hs.grid.maximizeWindow() end)
---- /: move window to next screen
-hs.hotkey.bind(mash, "/", function() local win = getWin(); win:moveToScreen(win:screen():next()) end)
---- .: snap window to grid
-hs.hotkey.bind(mash, ".", function() hs.grid.snap(getWin()) end)
+
 
 -- sfgcpw: APP SHORTCUT --
 hs.application.enableSpotlightForNameSearches(true)
@@ -70,7 +62,7 @@ hs.hotkey.bind(mash, "w", function() toggleApplication("Safari Technology Previe
                                      hs.layout.apply(windowLayout);
                                      end)
 
--- t: search safari tab --
+-- t: search and navigate to safari tabs --
 getTabs = [[
 on replaceString(theText, oldString, newString)
 	-- From http://applescript.bratis-lover.net/library/string/#replaceString
@@ -116,6 +108,7 @@ function tabChooserCallback(input)
    hs.application.launchOrFocus("Safari Technology Preview")
 end
 function tabSwitcher()
+  --  hs.alert("[⌘ ⌥ ⌃] + s")
    hs.application.launchOrFocus("Safari Technology Preview")
    print(hs.application.frontmostApplication():name())
    if hs.application.frontmostApplication():name() == "Safari Technology Preview" then
