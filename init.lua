@@ -31,7 +31,7 @@ spoon.MiroWindowsManager:bindHotkeys({
   fullscreen = {mash, "m"},
   nextscreen = {mash, "/"}
 })
-hs.window.animationDuration = 0.0
+hs.window.animationDuration = 0.05
 
 
 -- sfgcpw: APP SHORTCUT --
@@ -46,7 +46,6 @@ local function toggleApplication(name)
     app:hide()
   end
 end
-hs.hotkey.bind(mash, "s", function() toggleApplication("Safari Technology Preview") end)
 hs.hotkey.bind(mash, "f", function() toggleApplication("Finder") end)
 hs.hotkey.bind(mash, "g", function() toggleApplication("SourceTree") end)
 hs.hotkey.bind(mash, "c", function() toggleApplication("Visual Studio Code.app") end)
